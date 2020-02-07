@@ -1,4 +1,4 @@
-x <- seq(0, 20, length.out = 500)
+x <- seq(10, 30, length.out = 500)
 
 y1 <- 10 + 5*x
 y2 <- 20 + 5*x
@@ -22,3 +22,5 @@ library(ggplot2)
 ggplot(plotdat) + 
   geom_line(aes(x = x, y = y, color = sex)) + facet_wrap(~ pair) + 
   ylab("Outcome") + xlab("Age")
+
+ggsave(filename = 'D:\\gpapageorgiou\\Github_Repos\\EWP24\\Quizzes\\Q12_interacts2.png')
