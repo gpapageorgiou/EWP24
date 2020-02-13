@@ -13,4 +13,4 @@ ggplot(plotdat) +
   xlab('Follow-up Time') + 
   scale_color_manual(values = c('ddC' = 'red', 'ddI' = 'blue'))
 
-ggsave(filename = 'D:\\gpapageorgiou\\Github_Repos\\EWP24\\Quizzes\\homeKM.png')
+ggsave(filename = 'D:\\gpapageorgiou\\Github_Repos\\EWP24\\Quizzes\\homeKM2.png', width = 8, height = 4)
