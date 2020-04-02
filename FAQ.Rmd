@@ -1,0 +1,76 @@
+---
+title: "Survival Analysis for Clinicians (EWP24) FAQ"
+date:  "`r format(Sys.time(), '%d %b %Y')`"
+output: html_document
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# {.tabset}
+
+<span style = "font-size: 120%; color: red;">This is an informal FAQ list for the EWP24 course: Survival Analysis for clinicians.</span>
+
+You can navigate to each tab to find answers to questions related to the tab-specific topic that are being gathered each year while teaching the course.
+
+## Code 
+
+[When trying to calculate survival probabilities from a Cox model I get the following error: "Error in survfit.coxph(fit_final, newdata = ND) :The survfit function can not process coxph models with a tt term".](#linkCode1)
+
+#### When trying to calculate survival probabilities from a Cox model I get the following error: "Error in survfit.coxph(fit_final, newdata = ND) :The survfit function can not process coxph models with a tt term". {#linkCode1}
+
+This seems, indeed, to be a limitation of the survfit.coxph() method when you include a  tt() term. If in your dataset you have a violation of the PH assumption (as it seems), then you could better proceed by splitting the follow-up into two or more sub-intervals using the survSplit() function. For more info on how this works, see the corresponding section in Survival Analysis in R companion.
+
+## Theory
+
+[How to specify the appropriate number of degrees of freedom within the frailty() argument? Is this done with LRTs?](#linkTheory1)
+
+[What does 'marginal' and 'conditional' mean in terms of marginal models and conditional models?](#linkTheory2)
+
+[In the video of PART V it is said about the clustered event time data that "If the $\sigma=0$, it means that the data are independent, so that the effect of clustering is very minimal. And the bigger the $\sigma$ becomes, the more stronger is the clustering effect. So in this particular case, 0.19 is rather small effect of clustering, and this is why the two versions of the coefficients are rather similar." Which values of $\sigma$ would you consider a large correlation? Are there any rules of thumb for this?](#linkTheory3)
+
+[Frailty Cox models are able to quantify the effect of the difference between clusters. You said in the video that we can produce a ranking between clusters. How would one obtain such ranking (i.e., cluster A is better in treating a certain disease than cluster B and C)?](#linkTheory4)
+
+#### How to specify the appropriate number of degrees of freedom within the frailty() argument? Is this done with LRTs? {#linkTheory1}
+
+This is used sometimes to stabilize the estimation of the variance of the frailty terms. Nowadays, there is a new package called coxme to fit frailty models that can do this selection automatically.
+
+#### What does 'marginal' and 'conditional' mean in terms of marginal models and conditional models? {#linkTheory2}
+
+"Marginal" means across clusters, e.g., see the analysis on slide 333. From the marginal model, we get the hazard ratio for a year increase in baseline age across institutions. From the conditional model, we get the hazard ratio for a year increase in baseline age for subjects coming from the same institution.
+
+#### In the video of PART V it is said about the clustered event time data that "If the $\sigma=0$, it means that the data are independent, so that the effect of clustering is very minimal. And the bigger the $\sigma$ becomes, the more stronger is the clustering effect. So in this particular case, 0.19 is rather small effect of clustering, and this is why the two versions of the coefficients are rather similar." Which values of $\sigma$ would you consider a large correlation? Are there any rules of thumb for this? {#linkTheory3}
+
+There are no specific rules of thumbs on this, but I would say that when the variance is greater than 0.5 - 0.6, then we start to have some non-negligible variability across clusters.
+
+#### Frailty Cox models are able to quantify the effect of the difference between clusters. You said in the video that we can produce a ranking between clusters. How would one obtain such ranking (i.e., cluster A is better in treating a certain disease than cluster B and C)? {#linkTheory4}
+
+This ranking is produced by estimating the corresponding frailty terms. This based on the empirical Bayes methodology. In R you can extract the estimated frailty terms from the component called 'frail' in the fitted model object, e.g.,
+
+```{r, eval = FALSE}
+library("survival")
+
+fm <- coxph(Surv(time, status) ~ age + frailty(inst, df = 4), data = lung)
+
+fm$frail
+```
+
+## Exam
+
+[Is it necessary to include R syntaxes into the Word document wen descrining the steps that we performed?](#linkExam1)
+
+[How to decide what covariates to include in the final model? Usually the decision should be based on the research question and on prior knowledge on the possible association between variables and outcomes. However, these are not known for the assignmet.](#linkExam2)
+
+#### Is it necessary to include R syntaxes into the Word document wen descrining the steps that we performed? {#linkExam1}
+
+It is not necessary but can be included. More important is to describe the steps you have used to reach the final model, and show the output based on which you took the decisions to remove or keep some terms into your models.
+
+#### How to decide what covariates to include in the final model? Usually the decision should be based on the research question and on prior knowledge on the possible association between variables and outcomes. However, these are not known for the assignmet. {#linkExam2}
+
+Indeed you do not have any prior information on the particular disease described in the assignment. Therefore, what is expect from you is to start from an initial model/assumption that includes all predictors, a number of interactions and nonlinear terms (that you are free to select in your own), having in mind, of course, the rule that the number of coefficients in your initial model should be not much bigger than the number of events / 10. A little bigger is OK, e.g., if #events / 10 = 10.6 you can include up to 13 coefficients in your initial model.
+
+What is expected from the assignment is that given this initial model, you follow all the steps you learned to reach a final model. And that you appropriately interpret the results from this final model.
+
+## General
